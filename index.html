@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Bird Clone</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <div id="game-container">
+        <div id="start-screen" class="start-screen">
+            <img src="assets/logo.png" alt="logo">
+            <div class="botoes">
+                <button id="one-player-btn">1 Player</button>
+                <button id="two-player-btn">2 Players</button>
+            </div>
+        </div>
+        <div id="score-container">
+            <div id="score1" class="score">Jogador 1: 0</div>
+            <div id="score2" class="score" style="display: none;">Jogador 2: 0</div>
+        </div>
+        <div class="mensagem-container">
+            <p>Pressione 'Espaço' para o Player 1 ou 'Enter' para o Player 2</p>
+        </div>
+        <div class="game-over">
+            <img src="assets/gameOver.png" alt="Game Over">
+        </div>
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gifler@0.1.0/gifler.min.js"></script>
+    <script src="script.js"></script>
+
+</body>
+
+</html>
