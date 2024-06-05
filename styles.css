@@ -20,6 +20,21 @@ body, html {
     position: relative;
 }
 
+.bg-container{
+    width: 100%;
+    overflow: hidden;
+}
+
+.bg-container img {
+    width: 120px;
+    height: auto;
+    top: 20%;
+    position: absolute;
+    image-rendering: pixelated;
+    object-fit: contain;
+    animation: carrosel 15s linear infinite;
+}
+
 #start-screen {
     display: flex;
     flex-direction: column;
@@ -73,15 +88,25 @@ body, html {
     border-radius: 5px;
 }
 
-.mensagem-container {
+.solo-container {
     position: absolute;
-    bottom: 5%;
+    bottom: 0%;
     left: 50%;
     transform: translate(-50%);
-    animation: carrosel 15s linear infinite;
-    animation-fill-mode: forwards; 
     width: 100%;
     overflow: hidden;
+    background: #964b00;
+    padding: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.solo-container p {
+    color: #F3F2A6;
+    font-weight: 600;
+    animation: opacidade 2s infinite;
 }
 
 .game-over {
@@ -116,11 +141,26 @@ body, html {
     }
 }
 
-@keyframes carrosel {
+@keyframes opacidade {
     0% {
-        transform: translateX(-100);
+        opacity: 1;
+    }
+    25% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 0.5;
     }
     100% {
-        transform: translateX(100%);
+        opacity: 1;
+    }
+}
+
+@keyframes carrosel {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(100vw);
     }
 }

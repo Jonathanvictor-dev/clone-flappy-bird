@@ -12,6 +12,9 @@
 <body>
 
     <div id="game-container">
+        <div class="bg-container">
+            <img src="assets/bird1.gif" alt="bird">
+        </div>
         <div id="start-screen" class="start-screen">
             <img src="assets/logo.png" alt="logo">
             <div class="botoes">
@@ -20,11 +23,15 @@
             </div>
         </div>
         <div id="score-container">
-            <div id="score1" class="score">Jogador 1: 0</div>
-            <div id="score2" class="score" style="display: none;">Jogador 2: 0</div>
+            <div id="score1" class="score">
+                Jogador 1: 0
+            </div>
+            <div id="score2" class="score" style="display: none;">
+                Jogador 2: 0
+            </div>
         </div>
-        <div class="mensagem-container">
-            <p>Pressione 'Espaço' para o Player 1 ou 'Enter' para o Player 2</p>
+        <div class="solo-container">
+            <p id="mensagem">Pressione 'Espaço' para o Player 1 e 'Enter' para o Player 2</p>
         </div>
         <div class="game-over">
             <img src="assets/gameOver.png" alt="Game Over">
@@ -32,7 +39,6 @@
         <canvas id="gameCanvas"></canvas>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/gifler@0.1.0/gifler.min.js"></script>
     <script src="script.js"></script>
 
 </body>
