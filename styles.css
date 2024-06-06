@@ -20,6 +20,18 @@ body, html {
     position: relative;
 }
 
+img.bird {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    top: 50px;
+    left: 50px;
+    transition: top 0.1s;
+    object-fit: cover;
+    image-rendering: optimizeQuality;
+    display: none;
+}
+
 .bg-container{
     width: 100%;
     overflow: hidden;

@@ -10,6 +10,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const gameOver = document.querySelector('.game-over');
     const ctx = gameCanvas.getContext('2d');
     
+    const birdElement1 = document.getElementById('bird1');
+    const birdElement2 = document.getElementById('bird2');
+
+    // Adicione as classes aqui
+    birdElement1.classList.add('bird');
+    birdElement2.classList.add('bird');
+
+    const obstacleImageTop = new Image();
+    obstacleImageTop.src = 'assets/canoTop.png'; // Substitua pelo caminho correto da imagem do obstáculo superior
+    
+    const obstacleImageBottom = new Image();
+    obstacleImageBottom.src = 'assets/canoBottom.png'; // Substitua pelo caminho correto da imagem do obstáculo inferior
+
+    const cloudImage = new Image();
+    cloudImage.src = 'assets/nuvem.png'; // Substitua pelo caminho correto da imagem da nuvem
+    
     let isTwoPlayer = false;
     let isGameRunning = false;
     
@@ -17,23 +33,6 @@ document.addEventListener("DOMContentLoaded", () => {
     score1Display.style.display = 'none';
     score2Display.style.display = 'none';
     gameOver.style.display = 'none'; // Inicialmente ocultar a mensagem de game over
-
-    const birdImage1 = new Image();
-    birdImage1.src = '/assets/bird1.gif'; // Substitua pelo caminho da imagem do jogador 1
-
-    const birdImage2 = new Image();
-    birdImage2.src = '/assets/bird2.gif'; // Substitua pelo caminho da imagem do jogador 2
-
-    const cloudImage = new Image();
-    cloudImage.src = '/assets/nuvem.png'; // Substitua pelo caminho da imagem da nuvem
-
-    const obstacleImageTop = new Image();
-    obstacleImageTop.src = '/assets/canoTop.png'; // Substitua pelo caminho da imagem do topo do obstáculo
-    obstacleImageTop.style.objectFit = 'contain'; // Adiciona a propriedade cover para cobrir o tamanho do obstáculo
-
-    const obstacleImageBottom = new Image();
-    obstacleImageBottom.src = '/assets/canoBottom.png'; // Substitua pelo caminho da imagem da parte inferior do obstáculo
-    obstacleImageBottom.style.objectFit = 'contain'; // Adiciona a propriedade cover para cobrir o tamanho do obstáculo
 
     document.getElementById('one-player-btn').addEventListener('click', () => {
         startGame(false);
@@ -53,11 +52,16 @@ document.addEventListener("DOMContentLoaded", () => {
         gameCanvas.style.display = 'block';
         score1Display.style.display = 'block';
         score2Display.style.display = twoPlayer ? 'block' : 'none';
-        gameCanvas.width = window.innerWidth;
-        gameCanvas.height = window.innerHeight;
+        gameCanvas.width = window.innerWidth; // Definir a largura do canvas
+        gameCanvas.height = window.innerHeight; // Definir a altura do canvas
+    
+        // Exibir os pássaros somente se o jogo for iniciado
+        birdElement1.style.display = 'block';
+        birdElement2.style.display = twoPlayer ? 'block' : 'none';
+    
         resetGame();
         gameLoop();
-    }
+    }       
     
     function showGameOverMessage() {
         isGameRunning = false; // Indicar que o jogo não está mais em execução
@@ -73,25 +77,27 @@ document.addEventListener("DOMContentLoaded", () => {
     let bird1 = {
         x: 50,
         y: 50,
-        width: 120,
-        height: 80,
+        width: 100,
+        height: 100,
         gravity: 0.7, // Ajuste para aumentar a gravidade
         lift: -10, // Ajuste para diminuir a força do salto
         velocity: 0,
         velocityX: 0,
-        score: 0
+        score: 0,
+        element: birdElement1
     };
 
     let bird2 = {
         x: 100,
         y: 50,
-        width: 120,
-        height: 80,
+        width: 100,
+        height: 100,
         gravity: 0.7, // Ajuste para aumentar a gravidade
         lift: -10, // Ajuste para diminuir a força do salto
         velocity: 0,
         velocityX: 0,
-        score: 0
+        score: 0,
+        element: birdElement2
     };
 
     let obstacles = [];
@@ -99,20 +105,12 @@ document.addEventListener("DOMContentLoaded", () => {
     let obstacleInterval = 60; // Diminuir o intervalo para gerar obstáculos com mais frequência
     let frameCount = 0;
 
-    let currentFrame = 0;
-
-    function drawBird(bird, image) {
-        ctx.globalCompositeOperation = 'source-over';
-        ctx.drawImage(image, bird.x, bird.y, bird.width, bird.height);
-        currentFrame = (currentFrame + 1) % image.currentSrc.length; // Incrementa o frame e volta ao início se necessário
-    }
-
     function updateBird(bird) {
         bird.velocity += bird.gravity;
         bird.y += bird.velocity;
         if (bird.y > gameCanvas.height - bird.height) {
-            bird.y = gameCanvas.height - bird.height;
-            bird.velocity = 0;
+            showGameOverMessage(); // Mostrar mensagem de Game Over
+            return; // Interrompe a atualização do pássaro se ele colidir com o solo
         }
         if (bird.y < 0) {
             bird.y = 0;
@@ -120,17 +118,27 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         // Atualizar a posição horizontal com base na velocidade
         bird.x += bird.velocityX;
+        bird.element.style.top = `${bird.y}px`;
+        bird.element.style.left = `${bird.x}px`;
     }
 
     function drawObstacle(obstacle) {
-        // Draw top pipe
+        // Desenha o cano superior
         ctx.drawImage(obstacleImageTop, obstacle.x, 0, obstacle.width, obstacle.top);
-        // Draw bottom pipe
+        // Desenha o cano inferior
         ctx.drawImage(obstacleImageBottom, obstacle.x, gameCanvas.height - obstacle.bottom, obstacle.width, obstacle.bottom);
     }
 
     function drawCloud(cloud) {
         ctx.drawImage(cloudImage, cloud.x, cloud.y, cloud.width, cloud.height);
+    }
+    
+    function drawObstacles() {
+        obstacles.forEach(obstacle => drawObstacle(obstacle));
+    }
+    
+    function drawClouds() {
+        clouds.forEach(cloud => drawCloud(cloud));
     }
 
     function updateObstacles() {
@@ -204,40 +212,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function gameLoop() {
         if (!isGameRunning) {
-            return;
+            return; // Interrompe o loop se o jogo não estiver em execução
         }
     
         ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
     
-        updateClouds();
-        drawClouds();
-    
-        obstacles.forEach(obstacle => {
-            // Verificar colisão com obstáculos
-            if (checkCollision(bird1, obstacle) || (isTwoPlayer && checkCollision(bird2, obstacle))) {
-                showGameOverMessage();
-                isGameRunning = false; // Indicar que o jogo não está mais em execução
-                return; // Sair do loop imediatamente após a colisão
-            }
-        });
-    
-        // Verificar colisão com o solo
-        if (bird1.y >= gameCanvas.height - bird1.height || (isTwoPlayer && bird2.y >= gameCanvas.height - bird2.height)) {
-            showGameOverMessage();
-            isGameRunning = false; // Indicar que o jogo não está mais em execução
-            return; // Sair do loop se o pássaro atingir o solo
-        }
-    
         updateBird(bird1);
-        updateBird(bird2);
-    
-        drawBird(bird1, birdImage1);
         if (isTwoPlayer) {
-            drawBird(bird2, birdImage2);
+            updateBird(bird2);
         }
-    
+        
         updateObstacles();
-        drawObstacles();
+        updateClouds(); // Atualiza as nuvens antes de desenhá-las
+        
+        drawClouds(); // Desenha as nuvens primeiro
+        drawObstacles(); // Desenha os obstáculos depois
+    
+        if (obstacles.some(obstacle => checkCollision(bird1, obstacle)) ||
+            (isTwoPlayer && obstacles.some(obstacle => checkCollision(bird2, obstacle)))) {
+            showGameOverMessage();
+            return; // Interrompe o loop se houver colisão
+        }
     
         score1Display.textContent = `Jogador 1: ${bird1.score}`;
         if (isTwoPlayer) {
@@ -245,43 +240,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     
         frameCount++;
-        if (isGameRunning) {
-            requestAnimationFrame(gameLoop);
-        }
+        requestAnimationFrame(gameLoop);
     }
 
     document.addEventListener('keydown', (event) => {
-        if (event.key === ' ') {
+        if (event.code === 'Space') {
             bird1.velocity = bird1.lift;
         }
-        if (isTwoPlayer && event.key === 'ArrowUp') {
+        if (event.code === 'Enter' && isTwoPlayer) {
             bird2.velocity = bird2.lift;
-        }
-    });
-
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'ArrowRight') {
-            bird1.velocityX = 2; // Define a velocidade horizontal do bird1 para a direita
-        } else if (event.key === 'ArrowLeft') {
-            bird1.velocityX = -2; // Define a velocidade horizontal do bird1 para a esquerda
-        }
-
-        if (isTwoPlayer) {
-            if (event.key === 'd') {
-                bird2.velocityX = 2; // Define a velocidade horizontal do bird2 para a direita
-            } else if (event.key === 'a') {
-                bird2.velocityX = -2; // Define a velocidade horizontal do bird2 para a esquerda
-            }
-        }
-    });
-
-    document.addEventListener('keyup', (event) => {
-        if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
-            bird1.velocityX = 0; // Para o movimento horizontal do bird1
-        }
-
-        if (isTwoPlayer && (event.key === 'd' || event.key === 'a')) {
-            bird2.velocityX = 0; // Para o movimento horizontal do bird2
         }
     });
 });
