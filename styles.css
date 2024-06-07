@@ -22,13 +22,18 @@ body, html {
 
 img.bird {
     position: absolute;
-    width: 100px;
-    height: 100px;
+    width: 90px;
+    height: 75px;
     top: 50px;
     left: 50px;
-    transition: top 0.1s;
+    transform: translate(-50% -50%);
     object-fit: cover;
+    transition: top 0.1s;
     image-rendering: optimizeQuality;
+    display: none;
+}
+
+img.bird2 {
     display: none;
 }
 
