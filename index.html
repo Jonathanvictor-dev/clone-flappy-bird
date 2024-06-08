@@ -11,6 +11,13 @@
 
 <body>
 
+    <div id="score-history" class="score-history">
+        <h3 class="score-title">Score de cada nível</h3>
+        <p>Fácil: <span id="easy-score">0</span></p>
+        <p>Médio: <span id="medium-score">0</span></p>
+        <p>Difícil: <span id="hard-score">0</span></p>
+    </div>
+
     <div id="game-container">
         <div class="bg-container">
             <img src="assets/bird1.gif" alt="bird">
@@ -18,28 +25,26 @@
         <div id="start-screen" class="start-screen">
             <img src="assets/logo.png" alt="logo">
             <div class="botoes">
-                <button id="one-player-btn">1 Player</button>
-                <button id="two-player-btn">2 Players</button>
+                <select id="difficulty-select">
+                    <option value="easy">Fácil</option>
+                    <option value="medium">Médio</option>
+                    <option value="hard">Difícil</option>
+                </select>
+                <button id="one-player-btn">Iniciar Game</button>
             </div>
         </div>
         <div id="score-container">
-            <div id="score1" class="score">
-                Jogador 1: 0
-            </div>
-            <div id="score2" class="score" style="display: none;">
-                Jogador 2: 0
-            </div>
+            <div id="score1" class="score">Score atual: 0</div>
         </div>
         <div class="solo-container">
-            <p id="mensagem">Pressione 'Espaço' para o Player 1 e 'Enter' para o Player 2</p>
+            <p id="mensagem">Pressione 'Espaço' para pular!</p>
         </div>
         <div class="game-over">
             <img src="assets/gameOver.png" alt="Game Over">
         </div>
         <canvas id="gameCanvas"></canvas>
         <img id="bird1" src="assets/bird1.gif" class="bird" alt="Bird 1">
-        <img id="bird2" src="assets/bird2.gif" class="bird2" alt="Bird 2">
-    </div>    
+    </div>   
 
     <script src="script.js"></script>
 

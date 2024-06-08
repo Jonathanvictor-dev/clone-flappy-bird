@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const startScreen = document.getElementById('start-screen');
     const gameCanvas = document.getElementById('gameCanvas');
     const score1Display = document.getElementById('score1');
-    const score2Display = document.getElementById('score2');
     const birdBg = document.querySelector('.bg-container');
     const solo = document.querySelector('.solo-container');
     const mensagem = document.querySelector('#mensagem');
@@ -11,7 +10,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const ctx = gameCanvas.getContext('2d');
     
     const birdElement1 = document.getElementById('bird1');
-    const birdElement2 = document.getElementById('bird2');
+    const historyScore = document.querySelector('.score-history');
+    const difficultySelect = document.getElementById('difficulty-select');
+    const easyScoreDisplay = document.getElementById('easy-score');
+    const mediumScoreDisplay = document.getElementById('medium-score');
+    const hardScoreDisplay = document.getElementById('hard-score');
 
     const obstacleImageTop = new Image();
     obstacleImageTop.src = 'assets/canoTop.png';
@@ -22,36 +25,48 @@ document.addEventListener("DOMContentLoaded", () => {
     const cloudImage = new Image();
     cloudImage.src = 'assets/nuvem.png';
     
-    let isTwoPlayer = false;
     let isGameRunning = false;
+    let difficulty = 'easy';
+    let obstacleSpeed = 4;  // Increased speed for easy level
+    let obstacleInterval = 70;  // Decreased interval for easy level
     
     score1Display.style.display = 'none';
-    score2Display.style.display = 'none';
     gameOver.style.display = 'none';
 
     document.getElementById('one-player-btn').addEventListener('click', () => {
-        startGame(false);
+        difficulty = difficultySelect.value;
+        startGame(difficulty);
     });
 
-    document.getElementById('two-player-btn').addEventListener('click', () => {
-        startGame(true);
-    });
-
-    function startGame(twoPlayer) {
-        isTwoPlayer = twoPlayer;
+    function startGame(selectedDifficulty) {
+        difficulty = selectedDifficulty;
+        switch (difficulty) {
+            case 'easy':
+                obstacleSpeed = 4;  // Increased speed for easy level
+                obstacleInterval = 70;  // Decreased interval for easy level
+                break;
+            case 'medium':
+                obstacleSpeed = 6;
+                obstacleInterval = 60;
+                break;
+            case 'hard':
+                obstacleSpeed = 8;
+                obstacleInterval = 40;
+                break;
+        }
         isGameRunning = true;
+
+        historyScore.style.display = 'none';
         startScreen.style.display = 'none';
         birdBg.style.display = 'none';
         mensagem.style.visibility = 'hidden';
         gameOver.style.display = 'none';
         gameCanvas.style.display = 'block';
         score1Display.style.display = 'block';
-        score2Display.style.display = twoPlayer ? 'block' : 'none';
         gameCanvas.width = window.innerWidth;
         gameCanvas.height = window.innerHeight;
     
         birdElement1.style.display = 'block';
-        birdElement2.style.display = twoPlayer ? 'block' : 'none';
     
         resetGame();
         gameLoop();
@@ -59,44 +74,46 @@ document.addEventListener("DOMContentLoaded", () => {
     
     function showGameOverMessage() {
         isGameRunning = false;
+        saveScore();
         gameOver.style.display = 'block';
         setTimeout(() => {
             gameOver.style.display = 'none';
+            historyScore.style.display = 'block';
             startScreen.style.display = 'block';
             mensagem.style.visibility = 'visible';
+            updateScoreHistory();
             isGameRunning = false;
         }, 2000);
+    }
+
+    function saveScore() {
+        let scores = JSON.parse(localStorage.getItem('scores')) || { easy: [], medium: [], hard: [] };
+        scores[difficulty].push(bird1.score);
+        localStorage.setItem('scores', JSON.stringify(scores));
+    }
+
+    function updateScoreHistory() {
+        let scores = JSON.parse(localStorage.getItem('scores')) || { easy: [], medium: [], hard: [] };
+        easyScoreDisplay.textContent = scores.easy.length > 0 ? Math.max(...scores.easy) : 0;
+        mediumScoreDisplay.textContent = scores.medium.length > 0 ? Math.max(...scores.medium) : 0;
+        hardScoreDisplay.textContent = scores.hard.length > 0 ? Math.max(...scores.hard) : 0;
     }
 
     let bird1 = {
         x: 50,
         y: 50,
-        width: 90,
-        height: 75,
-        gravity: 0.3, // Diminuir o valor da gravidade para tornar a queda mais suave
+        width: 100,
+        height: 85,
+        gravity: 0.3,
         lift: -7,
-        velocity: 0.5, // Ajustar a velocidade inicial de queda
+        velocity: 0.5,
         velocityX: 0,
         score: 0,
         element: birdElement1
     };
-    
-    let bird2 = {
-        x: 100,
-        y: 50,
-        width: 105,
-        height: 50,
-        gravity: 0.2, // Diminuir o valor da gravidade para tornar a queda mais suave
-        lift: -5,
-        velocity: 0.9, // Ajustar a velocidade inicial de queda
-        velocityX: 0,
-        score: 0,
-        element: birdElement2
-    };
 
     let obstacles = [];
     let clouds = [];
-    let obstacleInterval = 80;
     let frameCount = 0;
 
     function updateBird(bird) {
@@ -141,17 +158,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         obstacles.forEach((obstacle, index) => {
-            obstacle.x -= 4;
+            obstacle.x -= obstacleSpeed;
             if (obstacle.x + obstacle.width < 0) {
                 obstacles.splice(index, 1);
             }
 
             if (!obstacle.passed && obstacle.x < bird1.x) {
                 bird1.score++;
-                obstacle.passed = true;
-            }
-            if (isTwoPlayer && !obstacle.passed && obstacle.x < bird2.x) {
-                bird2.score++;
                 obstacle.passed = true;
             }
         });
@@ -173,13 +186,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function checkCollision(bird, obstacle) {
-        // Calcular as posições ajustadas considerando o border radius
-        let birdTop = bird.y + bird.height * 0.15; // 15% da altura do bird
-        let birdBottom = bird.y + bird.height * 0.85; // 85% da altura do bird
-        let birdLeft = bird.x + bird.width * 0.15; // 15% da largura do bird
-        let birdRight = bird.x + bird.width * 0.85; // 85% da largura do bird
+        let birdTop = bird.y + bird.height * 0.25; // Increased to 25%
+        let birdBottom = bird.y + bird.height * 0.75; // Increased to 25%
+        let birdLeft = bird.x + bird.width * 0.25; // Increased to 25%
+        let birdRight = bird.x + bird.width * 0.75; // Increased to 25%
     
-        // Verificar se o bird está dentro da área segura entre os obstáculos
         if (
             birdRight > obstacle.x &&
             birdLeft < obstacle.x + obstacle.width &&
@@ -194,9 +205,6 @@ document.addEventListener("DOMContentLoaded", () => {
         bird1.y = 50;
         bird1.velocity = 0;
         bird1.score = 0;
-        bird2.y = 50;
-        bird2.velocity = 0;
-        bird2.score = 0;
         obstacles = [];
         clouds = [];
         frameCount = 0;
@@ -210,9 +218,6 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
     
         updateBird(bird1);
-        if (isTwoPlayer) {
-            updateBird(bird2);
-        }
         
         updateObstacles();
         updateClouds();
@@ -220,16 +225,12 @@ document.addEventListener("DOMContentLoaded", () => {
         drawClouds();
         drawObstacles();
     
-        if (obstacles.some(obstacle => checkCollision(bird1, obstacle)) ||
-            (isTwoPlayer && obstacles.some(obstacle => checkCollision(bird2, obstacle)))) {
+        if (obstacles.some(obstacle => checkCollision(bird1, obstacle))) {
             showGameOverMessage();
             return;
         }
     
-        score1Display.textContent = `Jogador 1: ${bird1.score}`;
-        if (isTwoPlayer) {
-            score2Display.textContent = `Jogador 2: ${bird2.score}`;
-        }
+        score1Display.textContent = `Score atual: ${bird1.score}`;
     
         frameCount++;
         requestAnimationFrame(gameLoop);
@@ -239,8 +240,12 @@ document.addEventListener("DOMContentLoaded", () => {
         if (event.code === 'Space') {
             bird1.velocity = bird1.lift;
         }
-        if (event.code === 'Enter' && isTwoPlayer) {
-            bird2.velocity = bird2.lift;
-        }
     });
+
+    document.addEventListener('touchstart', () => {
+        bird1.velocity = bird1.lift;
+    });
+
+    // Update score history on page load
+    updateScoreHistory();
 });
