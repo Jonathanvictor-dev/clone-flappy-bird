@@ -1,16 +1,24 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flappy Bird Clone</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" 
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
     <link rel="stylesheet" href="styles.css">
-    <link rel="shortcut icon" href="assets/android-chrome-512x512.png" type="image/x-icon">
+    <link rel="shortcut icon" href="assets/android-chrome-512x512.png" type="image/x-icon">  
 </head>
 
 <body>
 
+    <div class="rotate-message">
+        Por favor, vire seu dispositivo para uma melhor experiência de jogo.
+    </div>
+    
     <div id="score-history" class="score-history">
         <h3 class="score-title">Score de cada nível</h3>
         <p>Fácil: <span id="easy-score">0</span></p>
@@ -36,18 +44,19 @@
         <div id="score-container">
             <div id="score1" class="score">Score atual: 0</div>
         </div>
+
         <div class="solo-container">
             <p id="mensagem">Pressione 'Espaço' para pular!</p>
         </div>
+
         <div class="game-over">
             <img src="assets/gameOver.png" alt="Game Over">
         </div>
+
         <canvas id="gameCanvas"></canvas>
         <img id="bird1" src="assets/bird1.gif" class="bird" alt="Bird 1">
     </div>   
 
     <script src="script.js"></script>
-
 </body>
-
 </html>

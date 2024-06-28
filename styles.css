@@ -105,7 +105,7 @@ img.bird2 {
 #difficulty-select {
     width: 40%;
     text-align: center;
-    padding: 0.5rem 1.5rem;
+    padding: 0.5rem 1.5rem !important;
     border-radius: 0.7rem;
     border: none !important;
     background-color: #9EEA58;
@@ -115,10 +115,10 @@ img.bird2 {
     cursor: pointer;
     transition: 0.3s;
     outline-color: #FFFFFF;
+    appearance: none;
 }
 
-.start-screen button:hover, 
-#difficulty-select:hover {
+.start-screen button:hover {
     opacity: 0.9;
     scale: 1.1;
 }
@@ -216,5 +216,29 @@ img.bird2 {
     }
     100% {
         transform: translateX(100vw);
+    }
+}
+
+.rotate-message {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    z-index: 1000000;
+}
+
+@media (max-width: 480px) and (orientation: portrait) {
+    .rotate-message {
+        display: block;
+    }
+
+    #game-container {
+        display: none;
     }
 }

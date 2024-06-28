@@ -16,6 +16,25 @@ document.addEventListener("DOMContentLoaded", () => {
     const mediumScoreDisplay = document.getElementById('medium-score');
     const hardScoreDisplay = document.getElementById('hard-score');
 
+     // Função para verificar a orientação da tela
+     function checkOrientation() {
+        const rotateMessage = document.querySelector('.rotate-message');
+        if (window.innerWidth < 480 && window.innerHeight > window.innerWidth) {
+            rotateMessage.style.display = 'block';
+            gameContainer.style.display = 'none';
+        } else {
+            rotateMessage.style.display = 'none';
+            gameContainer.style.display = 'block';
+        };
+    };
+
+    // Adiciona eventos para verificar a orientação ao redimensionar e rotacionar a tela
+    window.addEventListener('resize', checkOrientation);
+    window.addEventListener('orientationchange', checkOrientation);
+
+    // Verifica a orientação inicial
+    checkOrientation();
+
     const obstacleImageTop = new Image();
     obstacleImageTop.src = 'assets/canoTop.png';
     
@@ -24,11 +43,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const cloudImage = new Image();
     cloudImage.src = 'assets/nuvem.png';
+
+    // Adicione os arquivos de áudio
+    const backgroundMusic = new Audio('audio/background.mp3');
+    const gameOverSound = new Audio('audio/gameover.mp3');
     
     let isGameRunning = false;
     let difficulty = 'easy';
-    let obstacleSpeed = 4;  // Increased speed for easy level
-    let obstacleInterval = 70;  // Decreased interval for easy level
+    let obstacleSpeed = 4;  
+    let obstacleInterval = 70;  
     
     score1Display.style.display = 'none';
     gameOver.style.display = 'none';
@@ -42,8 +65,8 @@ document.addEventListener("DOMContentLoaded", () => {
         difficulty = selectedDifficulty;
         switch (difficulty) {
             case 'easy':
-                obstacleSpeed = 4;  // Increased speed for easy level
-                obstacleInterval = 70;  // Decreased interval for easy level
+                obstacleSpeed = 4;  
+                obstacleInterval = 70;  
                 break;
             case 'medium':
                 obstacleSpeed = 6;
@@ -55,6 +78,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 break;
         }
         isGameRunning = true;
+
+        // Tocar a música de fundo ao iniciar o jogo
+        backgroundMusic.loop = true;
+        backgroundMusic.play();
 
         historyScore.style.display = 'none';
         startScreen.style.display = 'none';
@@ -74,6 +101,11 @@ document.addEventListener("DOMContentLoaded", () => {
     
     function showGameOverMessage() {
         isGameRunning = false;
+
+        // Parar a música de fundo e tocar o som de game over
+        backgroundMusic.pause();
+        gameOverSound.play();
+
         saveScore();
         gameOver.style.display = 'block';
         setTimeout(() => {
@@ -186,10 +218,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function checkCollision(bird, obstacle) {
-        let birdTop = bird.y + bird.height * 0.25; // Increased to 25%
-        let birdBottom = bird.y + bird.height * 0.75; // Increased to 25%
-        let birdLeft = bird.x + bird.width * 0.25; // Increased to 25%
-        let birdRight = bird.x + bird.width * 0.75; // Increased to 25%
+        let birdTop = bird.y + bird.height * 0.25; 
+        let birdBottom = bird.y + bird.height * 0.75; 
+        let birdLeft = bird.x + bird.width * 0.25; 
+        let birdRight = bird.x + bird.width * 0.75; 
     
         if (
             birdRight > obstacle.x &&
@@ -246,6 +278,5 @@ document.addEventListener("DOMContentLoaded", () => {
         bird1.velocity = bird1.lift;
     });
 
-    // Update score history on page load
     updateScoreHistory();
 });
